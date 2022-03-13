@@ -21,6 +21,7 @@
     </properties>
 
     <modules>
+        <module>benchmarking-cpu</module>
         <module>springboot-k8s-hello-world</module>
     </modules>
 
