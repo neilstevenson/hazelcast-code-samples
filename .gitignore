@@ -8,6 +8,7 @@ target/
 .classpath
 .factorypath
 .settings/
+.vscode
 **/.springBeans
 .idea/
 .patch
