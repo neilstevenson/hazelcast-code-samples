@@ -1,0 +1,24 @@
+---
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# $$$$$$$$$$$$$$$$$$$$$$$ JOB DEFINITIONS $$$$$$$$$$$$$$$$$$$$$$$
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app: benchmarking-billions-job-client
+  name: benchmarking-billions-job-client
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: benchmarking-billions-job-client
+    spec:
+      containers:
+        - image: "hazelcast-code-samples/benchmarking-billions-client"
+          imagePullPolicy: Never
+          name: benchmarking-billions-job-client-container
+      restartPolicy: Never
+---

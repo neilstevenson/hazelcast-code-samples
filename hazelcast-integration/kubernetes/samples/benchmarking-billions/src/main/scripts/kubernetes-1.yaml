@@ -1,0 +1,132 @@
+---
+# Service DNS for Management Center will be "benchmarking-billions-management-center.default.svc.cluster.local".
+# Service DNS for Prometheus will be "benchmarking-billions-prometheus.default.svc.cluster.local".
+# Service DNS for Grafana will be "benchmarking-billions-grafana.default.svc.cluster.local".
+---
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# $$$$$$$$$$$$$$$$$$$$$ SERVICE DEFINITIONS $$$$$$$$$$$$$$$$$$$$$
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+---
+# Service for Management Center
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: benchmarking-billions-management-center
+spec:
+  selector:
+    app: benchmarking-billions-management-center
+  ports:
+    - name: benchmarking-billions-management-center
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
+---
+# Service for Prometheus
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: benchmarking-billions-prometheus
+spec:
+  selector:
+    app: benchmarking-billions-prometheus
+  ports:
+    - name: prometheus
+      port: 9090
+      targetPort: 9090
+  type: LoadBalancer
+---
+# Service for Grafana
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: benchmarking-billions-grafana
+spec:
+  selector:
+    app: benchmarking-billions-grafana
+  ports:
+    - name: grafana
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
+---
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# $$$$$$$$$$$$$$$$$$$$$$$ POD DEFINITIONS $$$$$$$$$$$$$$$$$$$$$$$
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+---
+# Pod for Management Center
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: benchmarking-billions-management-center
+spec:
+  selector:
+    matchLabels:
+      app: benchmarking-billions-management-center
+  template:
+    metadata:
+      labels:
+        app: benchmarking-billions-management-center
+    spec:
+      containers:
+        - image: "hazelcast-code-samples/benchmarking-billions-management-center"
+          imagePullPolicy: Never
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8081
+          name: benchmarking-billions-management-center-container
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8081
+            initialDelaySeconds: 30
+          resources:
+            requests:
+              memory: "4096Mi"
+            limits:
+              memory: "4096Mi"
+---
+# Pod for Prometheus
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: benchmarking-billions-prometheus
+spec:
+  selector:
+    matchLabels:
+      app: benchmarking-billions-prometheus
+  template:
+    metadata:
+      labels:
+        app: benchmarking-billions-prometheus
+    spec:
+      containers:
+        - image: "hazelcast-code-samples/benchmarking-billions-prometheus"
+          imagePullPolicy: Always
+          name: benchmarking-billions-prometheus-container
+---
+# Pod for Grafana
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: benchmarking-billions-grafana
+spec:
+  selector:
+    matchLabels:
+      app: benchmarking-billions-grafana
+  template:
+    metadata:
+      labels:
+        app: benchmarking-billions-grafana
+    spec:
+      containers:
+        - image: "hazelcast-code-samples/benchmarking-billions-grafana"
+          imagePullPolicy: Always
+          name: benchmarking-billions-grafana-container
+---

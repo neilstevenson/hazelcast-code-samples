@@ -1,0 +1,62 @@
+---
+# Service DNS will be "benchmarking-billions-hazelcast.default.svc.cluster.local".
+---
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# $$$$$$$$$$$$$$$$$$$$$ SERVICE DEFINITIONS $$$$$$$$$$$$$$$$$$$$$
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: benchmarking-billions-hazelcast
+spec:
+  clusterIP: None
+  selector:
+    app: benchmarking-billions-hazelcast
+  ports:
+  - port: 5701
+---
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# $$$$$$$$$$$$$$$$$$$$$$$ POD DEFINITIONS $$$$$$$$$$$$$$$$$$$$$$$
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: benchmarking-billions-hazelcast
+spec:
+  replicas: 5
+  serviceName: benchmarking-billions-hazelcast
+  selector:
+    matchLabels:
+      app: benchmarking-billions-hazelcast
+  template:
+    metadata:
+      labels:
+        app: benchmarking-billions-hazelcast
+    spec:
+      containers:
+        - image: "hazelcast-code-samples/benchmarking-billions-server"
+          imagePullPolicy: Never
+          livenessProbe:
+            httpGet:
+              path: /hazelcast/health/node-state
+              port: 5701
+            failureThreshold: 6
+          name: benchmarking-billions-server-container
+          readinessProbe:
+            httpGet:
+              path: /hazelcast/health/ready
+              port: 5701
+            initialDelaySeconds: 30
+          #resources:
+          #  requests:
+          #    cpu: "4"
+          #    memory: "4096Mi"
+          #  limits:
+          #    cpu: "4"
+          #    memory: "4096Mi"
+          #args:
+          #- -cpus
+          #- "4"
+---
